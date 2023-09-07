@@ -1,3 +1,14 @@
+What I've covered:
+How to create stages, databases, tables, views, and virtual warehouses.
+How to load structured and semi-structured data.
+How to perform analytical queries on data in Snowflake, including joins between tables.
+How to clone objects.
+How to undo user errors using Time Travel.
+How to create roles and users, and grant them privileges.
+How to securely and easily share data with other accounts.
+How to consume datasets in the Snowflake Data Marketplace.
+
+
 # Snowflake-NY-citibike-weather
 9/7/2023,Snowflake project
 use role sysadmin;
