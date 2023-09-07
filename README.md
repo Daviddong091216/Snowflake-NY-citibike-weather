@@ -204,3 +204,76 @@ from trips
 group by 1
 order by 2 desc
 limit 20;
+--9. Working with Roles, Account Admin, & Account Usage
+
+use role accountadmin;
+create role junior_dba;
+grant role junior_dba to user admin;
+
+use role junior_dba;
+
+use role accountadmin;
+grant usage on warehouse compute_wh to role junior_dba;
+
+use role junior_dba;
+use warehouse compute_wh;
+
+use role accountadmin;
+
+grant usage on database citibike to role junior_dba;
+
+grant usage on database weather to role junior_dba;
+use role junior_dba;
+
+use role accountadmin;
+
+--10. Sharing Data Securely & the Data Marketplace
+
+// Get total case count by country
+/*
+Calculates the total number of cases by country, aggregated over time.
+*/
+SELECT   COUNTRY_REGION, SUM(CASES) AS Cases
+FROM     ECDC_GLOBAL
+GROUP BY COUNTRY_REGION;
+
+// Change in mobility in over time
+/*
+Displays the change in visits to places like grocery stores and parks by date, location and location type for a sub-region (Alexandria) of a state (Virginia) of a country (United States).
+*/
+SELECT DATE,
+       COUNTRY_REGION,
+       PROVINCE_STATE,
+       GROCERY_AND_PHARMACY_CHANGE_PERC,
+       PARKS_CHANGE_PERC,
+       RESIDENTIAL_CHANGE_PERC,
+       RETAIL_AND_RECREATION_CHANGE_PERC,
+       TRANSIT_STATIONS_CHANGE_PERC,
+       WORKPLACES_CHANGE_PERC
+FROM   GOOG_GLOBAL_MOBILITY_REPORT
+WHERE  COUNTRY_REGION = 'United States'
+  AND PROVINCE_STATE = 'Virginia'
+  AND SUB_REGION_2 = 'Alexandria';
+
+// Date-dependent case fatality ratio
+/*
+Calculate case-fatality ratio for a given date
+*/
+SELECT m.COUNTRY_REGION, m.DATE, m.CASES, m.DEATHS, m.DEATHS / m.CASES as CFR
+FROM (SELECT COUNTRY_REGION, DATE, AVG(CASES) AS CASES, AVG(DEATHS) AS DEATHS
+      FROM ECDC_GLOBAL
+      GROUP BY COUNTRY_REGION, DATE) m
+WHERE m.CASES > 0;
+
+--11. Resetting Your Snowflake Environment
+use role accountadmin;
+drop share if exists zero_to_snowflake_shared_data;
+-- If necessary, replace "zero_to_snowflake-shared_data" with the name you used for the share
+
+drop database if exists citibike;
+
+drop database if exists weather;
+
+drop warehouse if exists analytics_wh;
+
+drop role if exists junior_dba;
